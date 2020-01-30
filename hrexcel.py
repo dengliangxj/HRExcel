@@ -8,7 +8,7 @@ from excelwidget import ExcelWidget
 def main():
     app = QtWidgets.QApplication(sys.argv)
     excelWidget = ExcelWidget()
-    excelWidget.exec()
+    excelWidget.show()
     sys.exit(app.exec_())
 
 

@@ -1,8 +1,10 @@
+import os
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
 from excel import Ui_Dialog
 from excelloader import ExcelLoader
 from excelsplit import ExcelSplit
+from excelmerge import ExcelMerge
 
 
 class ExcelWidget(QtWidgets.QDialog):
@@ -12,11 +14,12 @@ class ExcelWidget(QtWidgets.QDialog):
         self.ui = Ui_Dialog()
 
         # 构造拆分表格的数据字典
-        self.__splitDict__ = {}
-        self.__mergeDict__ = {}
+        self.__splitList__ = []
+        self.__mergeList__ = []
 
         # 初始化当前路径
         self.__lastFilePath__ = QtCore.QDir.currentPath()
+        self.__mergeFileDir__ = self.__lastFilePath__
 
         # 构造Excel加载器
         self.__excelLoader__ = ExcelLoader(self)
@@ -30,6 +33,9 @@ class ExcelWidget(QtWidgets.QDialog):
         # 构造拆分表格的文件名称
         self.__splitXlsFile__ = ''
         self.__splitSheetName__ = ''
+
+        # 构造Excel合并器
+        self.__excelMerge__ = ExcelMerge(self)
 
         # 初始化UI界面以及信号连接
         self.initUi()
@@ -65,8 +71,6 @@ class ExcelWidget(QtWidgets.QDialog):
 
         print('chooseFilePath:' + chooseFilePath[0])
 
-        # 更新最近的文件目录 TBD
-
         # 如果路径为空，则直接返回
         if chooseFilePath[0] == '':
             print('chooseFilePath is empty!')
@@ -81,12 +85,15 @@ class ExcelWidget(QtWidgets.QDialog):
         # 记录待拆分的XLS文件名称
         self.__splitXlsFile__ = chooseFilePath[0]
 
+        # 更新最近的文件目录
+        self.__lastFilePath__ = os.path.dirname(self.__splitXlsFile__)
+
         # 启动Excel文件的加载
         self.__excelLoader__.load(self.__splitXlsFile__)
 
     # 声明响应Excel文件加载完成的槽函数
-    @pyqtSlot(dict, str)
-    def onSplitImportFinished(self, dataDict, sheetName):
+    @pyqtSlot(list, str)
+    def onSplitImportFinished(self, listData, sheetName):
 
         print('onSplitImportFinished sheetName: ', sheetName)
 
@@ -97,17 +104,17 @@ class ExcelWidget(QtWidgets.QDialog):
         self.enableBtns(True)
 
         # 更新数据字典
-        self.__splitDict__ = dataDict
+        self.__splitList__ = listData
         self.__splitSheetName__ = sheetName
-
-        # 在界面上展示对应的拆分表头
-        self.__splitModel__.setStringList(dataDict.keys())
 
         # 提示加载完成或者加载失败
         tipMessage = '加载Excel文件失败'
 
-        if dataDict:
+        if listData:
+            # 在界面上展示对应的拆分表头
+            self.__splitModel__.setStringList(listData[0])
             tipMessage = '加载待拆分表格完成！'
+
         else:
             # 清空待记录的拆分表格文件
             self.__splitXlsFile__ = ''
@@ -120,7 +127,7 @@ class ExcelWidget(QtWidgets.QDialog):
         print('onSplitExecute')
 
         # 有效响应：A. splitDict有数据  B. listView中有选中的条目
-        if (self.__splitXlsFile__ == '') or (not self.__splitDict__):
+        if (self.__splitXlsFile__ == '') or (not self.__splitList__):
             # 提示没有加载Excel文件
             QtWidgets.QMessageBox.information(None, '提示', '请先加载待拆分的Excel文件！')
             return
@@ -136,11 +143,11 @@ class ExcelWidget(QtWidgets.QDialog):
 
         # 根据选择的条目，获得当前的拆分字段
         headerStringList = self.__splitModel__.stringList()
-        dataFilter = []
+        headerIndexes = []
 
+        # 获取选择的表头Index集合
         for selectedIndex in selectedIndexList:
-            rowIndex = selectedIndex.row()
-            dataFilter.append(headerStringList[rowIndex])
+            headerIndexes.append(selectedIndex.row())
 
         # 灰显按钮
         self.enableBtns(False)
@@ -149,7 +156,7 @@ class ExcelWidget(QtWidgets.QDialog):
         self.__excelSplit__.signal_Progressed.connect(self.onSplitProgressed)
         self.__excelSplit__.finished.connect(self.onSplitFinished)
 
-        self.__excelSplit__.split(self.__splitXlsFile__, self.__splitSheetName__, self.__splitDict__, dataFilter)
+        self.__excelSplit__.split(self.__splitXlsFile__, self.__splitSheetName__, self.__splitList__, headerIndexes)
 
     # 声明响应拆分表格进度通知槽函数
     @pyqtSlot(int, int)
@@ -184,12 +191,89 @@ class ExcelWidget(QtWidgets.QDialog):
     # 声明响应合并导入槽函数
     @pyqtSlot()
     def onMergeImport(self):
-        pass
+        # 弹出目录选择框，供用户选择需要合并的目录
+        dlgTitle = '选择合并目录'
+        chooseFilePath = QtWidgets.QFileDialog.getExistingDirectory(None, dlgTitle, self.__lastFilePath__)
+
+        if chooseFilePath == '':
+            return
+
+        # 更新最近的文件路径
+        self.__lastFilePath__ = chooseFilePath
+        self.__mergeFileDir__ = chooseFilePath
+
+        # 在界面中显示文件路径
+        self.ui.labelMergeDirPath.setText(chooseFilePath)
 
     # 声明响应合并导入槽函数
     @pyqtSlot()
     def onMergeExecute(self):
-        pass
+        # 首先判定是否有选择路径
+        if self.__mergeFileDir__ == '':
+            # 提示先选择待合并的路径
+            QtWidgets.QMessageBox.information(None, '提示', '请先选择合并文件路径！')
+            return
+
+        # 获取目录下的所有Excel文件
+        dirFiles = os.listdir(self.__mergeFileDir__)
+        allExcelFileList = []
+
+        # 设置为绝对路径
+        for dirFileName in dirFiles:
+            walkFileName = os.path.join(self.__mergeFileDir__, dirFileName)
+
+            # 过滤非excel后缀文件以及合并的Excel文件
+            if ('.xls' in walkFileName) and ('Merge' not in walkFileName):
+                allExcelFileList.append(walkFileName)
+
+        # 如果所有文件为空的话，提示用户，没有发现XLS文件
+        if not allExcelFileList:
+            QtWidgets.QMessageBox.information(None, '提示', '合并文件目录未发现Excel文件！')
+            return
+
+        # 灰显按钮
+        self.enableBtns(False)
+
+        # 执行所有的Excel的合并
+        self.__excelMerge__.signal_Progressed.connect(self.onMergeProgressed)
+        self.__excelMerge__.signal_Finished.connect(self.onMergeFinished)
+
+        # 执行Excel的合并操作
+        self.__excelMerge__.merge(allExcelFileList)
+
+    # 声明响应合并进度的槽函数
+    @pyqtSlot(int, int)
+    def onMergeProgressed(self, curProgress, maxProgress):
+        # 首先展示进度条
+        if not self.ui.pBarMerge.isVisible():
+            self.ui.pBarMerge.setVisible(True)
+
+        # 设置进度条的最大和当前刻度
+        self.ui.pBarMerge.setRange(0, maxProgress)
+        self.ui.pBarMerge.setValue(curProgress)
+
+    # 声明响应合并表格完成槽函数
+    @pyqtSlot(bool, str)
+    def onMergeFinished(self, success, errStrings):
+        # 断连信号
+        self.__excelMerge__.signal_Progressed.disconnect()
+        self.__excelMerge__.signal_Finished.disconnect()
+
+        # 隐藏进度条
+        self.ui.pBarMerge.setVisible(False)
+
+        # 清理进度条
+        self.ui.pBarMerge.reset()
+
+        # 亮显按钮
+        self.enableBtns(True)
+
+        if success:
+            # 提示拆分完成
+            QtWidgets.QMessageBox.information(None, '提示', '表格合并完成！')
+        else:
+            # 提示故障字符串
+            QtWidgets.QMessageBox.information(None, '提示', errStrings)
 
     # 灰显所有的按钮
     def enableBtns(self, enable):

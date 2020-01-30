@@ -11,7 +11,7 @@ class ExcelLoader(QtCore.QThread):
     signal_LoadStarted = pyqtSignal(int)
 
     # 定义结束信号
-    signal_LoadFinished = pyqtSignal(dict, str)
+    signal_LoadFinished = pyqtSignal(list, str)
 
     def __init__(self, parent):
         QtCore.QThread.__init__(self, parent)
@@ -26,14 +26,37 @@ class ExcelLoader(QtCore.QThread):
         self.start()
 
     # 执行数据所有字段的加载
-    def loadFieldsFromSheet(self, sheet):
-        # 获取sheet中的所有字段大小
-        print(sheet.name, sheet.nrows, sheet.ncols)
+    @staticmethod
+    def loadFieldsFromSheet(sheetFileName):
+        # 读取Excel文件
+        excelFile = xlrd.open_workbook(sheetFileName)
 
-        # 定义一个字典
-        dict = {}
+        # 获取所有的sheet名字
+        sheetNameList = excelFile.sheet_names()
+
+        # 定义Excel的sheetName
+        sheetName = ''
+
+        # 定义一个列表集合
+        listData = []
+
+        # 如果一个sheet都没有则返回空字典
+        if not sheetNameList:
+            # 直接发送空字典
+            return listData, sheetName
+
+        # 记录第一个sheet的名称
+        sheetName = sheetNameList[0]
+
+        # 加载所有的表格内容
+        sheet = excelFile.sheet_by_name(sheetName)
+
+        # 打印数据表中的信息
+        print('start load excel file : ', sheetFileName, sheet.name, sheet.nrows, sheet.ncols)
+
         headerRow = 0
         headerStrings = []
+        dataColumnIndexes = []
 
         # 搜索第一个字段开头为“工号”，即为表头项目
         for theRowNo in range(sheet.nrows):
@@ -47,65 +70,40 @@ class ExcelLoader(QtCore.QThread):
                 headerRow = theRowNo
 
                 # 记录表头(非空字段)
-                for headerKeyString in valueStrings:
-                    if headerKeyString.strip() != '':
-                        headerStrings.append(headerKeyString)
-
+                for i in range(len(valueStrings)):
+                    if valueStrings[i].strip() != '':
+                        headerStrings.append(valueStrings[i])
+                        dataColumnIndexes.append(i)
                 break
 
+        # 第一行记录表头
+        listData.append(headerStrings)
+
         # 开始遍历表格，记录所有的信息
-        for theColIndex in range(len(headerStrings)):
-            # 如果表头非空的，则读取所有的信息到dict中
-            if headerStrings[theColIndex] != '':
-                # 读取表格中所有的对应行的数据
-                cellDataList = []
-                for theRowNo in range(headerRow+1, sheet.nrows):
-                    cell_string = sheet.cell_value(theRowNo, theColIndex)
-                    cellDataList.append(cell_string)
+        for rowIndex in range(headerRow+1, sheet.nrows):
 
-                # 保存到字典中
-                dict[headerStrings[theColIndex]] = cellDataList
+            # 构造一行的数据
+            cellDataList = []
 
-        return dict
+            # 遍历每一行保存数据
+            for colIndex in dataColumnIndexes:
+                cellString = sheet.cell_value(rowIndex, colIndex)
+                cellDataList.append(cellString)
+
+            # 保存列表集合
+            listData.append(cellDataList)
+
+        print('finish load excel file : ', sheetFileName)
+
+        return listData, sheetName
 
     # 重载线程的run函数
     def run(self):
         # 通知外部开始启动
         self.signal_LoadStarted.emit(5)
 
-        print('start load excel file : ' + self.__loadPath__)
-
-        # 执行Excel的加载
-        dict = {}
-
-        # 读取Excel文件
-        excelFile = xlrd.open_workbook(self.__loadPath__)
-
-        # 获取所有的sheet名字
-        sheetNameList = excelFile.sheet_names()
-
-        # 如果一个sheet都没有则返回空字典
-        if not sheetNameList:
-            # 直接发送空字典
-            self.signal_LoadFinished.emit(dict)
-
-        # 记录第一个sheet的名称
-        sheetName = sheetNameList[0]
-
-        # 读取第一个worksheet
-        print('start process first worksheet: ' + sheetName)
-
-        # 加载所有的表格内容
-        sheet = excelFile.sheet_by_name(sheetName)
-
-        if not sheet:
-            print('load sheet failed: ' + sheetName)
-            self.signal_LoadFinished.emit(dict)
-
         # 从sheet中读取所有的字段
-        dict = self.loadFieldsFromSheet(sheet)
-
-        print('finish load excel file : ' + self.__loadPath__)
+        loadResultList = self.loadFieldsFromSheet(self.__loadPath__)
 
         # 通过信号将字典发送到UI界面
-        self.signal_LoadFinished.emit(dict, sheetName)
+        self.signal_LoadFinished.emit(loadResultList[0], loadResultList[1])

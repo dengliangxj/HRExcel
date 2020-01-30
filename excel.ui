@@ -6,123 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1003</width>
     <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Mindray表格处理平台</string>
   </property>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>620</x>
-     <y>20</y>
-     <width>351</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>黑体</family>
-     <pointsize>6</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;选择拆分表格文件完成后自动展示表头&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;项，勾选项后可按照勾选项进行拆分。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="Line" name="line">
-   <property name="geometry">
-    <rect>
-     <x>560</x>
-     <y>20</y>
-     <width>20</width>
-     <height>731</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <stylestrategy>PreferDefault</stylestrategy>
-    </font>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Vertical</enum>
-   </property>
-  </widget>
-  <widget class="QListView" name="listView">
-   <property name="geometry">
-    <rect>
-     <x>620</x>
-     <y>120</y>
-     <width>341</width>
-     <height>561</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>黑体</family>
-     <pointsize>14</pointsize>
-    </font>
-   </property>
-   <property name="focusPolicy">
-    <enum>Qt::NoFocus</enum>
-   </property>
-   <property name="contextMenuPolicy">
-    <enum>Qt::NoContextMenu</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="horizontalScrollBarPolicy">
-    <enum>Qt::ScrollBarAlwaysOff</enum>
-   </property>
-   <property name="sizeAdjustPolicy">
-    <enum>QAbstractScrollArea::AdjustToContents</enum>
-   </property>
-   <property name="editTriggers">
-    <set>QAbstractItemView::NoEditTriggers</set>
-   </property>
-   <property name="dragDropMode">
-    <enum>QAbstractItemView::NoDragDrop</enum>
-   </property>
-   <property name="defaultDropAction">
-    <enum>Qt::IgnoreAction</enum>
-   </property>
-   <property name="alternatingRowColors">
-    <bool>false</bool>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::MultiSelection</enum>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-   <property name="textElideMode">
-    <enum>Qt::ElideRight</enum>
-   </property>
-   <property name="movement">
-    <enum>QListView::Free</enum>
-   </property>
-   <property name="isWrapping" stdset="0">
-    <bool>false</bool>
-   </property>
-   <property name="resizeMode">
-    <enum>QListView::Fixed</enum>
-   </property>
-   <property name="uniformItemSizes">
-    <bool>false</bool>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-   <property name="selectionRectVisible">
-    <bool>true</bool>
-   </property>
-   <property name="itemAlignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
@@ -220,7 +110,7 @@
      <x>30</x>
      <y>340</y>
      <width>511</width>
-     <height>371</height>
+     <height>391</height>
     </rect>
    </property>
    <property name="font">
@@ -236,7 +126,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
+      <y>50</y>
       <width>441</width>
       <height>61</height>
      </rect>
@@ -254,7 +144,7 @@
     <property name="geometry">
      <rect>
       <x>290</x>
-      <y>150</y>
+      <y>130</y>
       <width>200</width>
       <height>70</height>
      </rect>
@@ -273,7 +163,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>150</y>
+      <y>130</y>
       <width>200</width>
       <height>70</height>
      </rect>
@@ -298,7 +188,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>310</y>
+      <y>340</y>
       <width>471</width>
       <height>28</height>
      </rect>
@@ -326,9 +216,9 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>250</y>
+      <y>220</y>
       <width>371</width>
-      <height>51</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="font">
@@ -348,9 +238,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>250</y>
+      <y>220</y>
       <width>91</width>
-      <height>51</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="font">
@@ -361,6 +251,117 @@
     </property>
     <property name="text">
      <string>合并路径：</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>40</y>
+     <width>401</width>
+     <height>691</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>黑体</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="title">
+    <string>拆分条件选择</string>
+   </property>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>351</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>黑体</family>
+      <pointsize>6</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;选择拆分表格文件完成后自动展示所有&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;表头项，选择拆分的条件后便按照选项&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;进行拆分，支持多选。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QListView" name="listView">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>150</y>
+      <width>341</width>
+      <height>521</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>黑体</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="contextMenuPolicy">
+     <enum>Qt::NoContextMenu</enum>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContents</enum>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="dragDropMode">
+     <enum>QAbstractItemView::DragOnly</enum>
+    </property>
+    <property name="defaultDropAction">
+     <enum>Qt::IgnoreAction</enum>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>false</bool>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::MultiSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
+    <property name="textElideMode">
+     <enum>Qt::ElideRight</enum>
+    </property>
+    <property name="movement">
+     <enum>QListView::Free</enum>
+    </property>
+    <property name="isWrapping" stdset="0">
+     <bool>false</bool>
+    </property>
+    <property name="resizeMode">
+     <enum>QListView::Fixed</enum>
+    </property>
+    <property name="uniformItemSizes">
+     <bool>false</bool>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="selectionRectVisible">
+     <bool>true</bool>
+    </property>
+    <property name="itemAlignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>

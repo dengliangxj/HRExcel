@@ -1,1 +1,1 @@
-pyinstaller -i ./resource/hrexcel.ico -w hrexcel.py
+pyinstaller -i ./resource/program.ico -w hrexcel.py
