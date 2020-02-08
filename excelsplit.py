@@ -63,16 +63,14 @@ class ExcelSplit(QtCore.QThread):
         totalSplitNum = len(dataValueKeyList)
         print('dataValueKeyList size: ', totalSplitNum)
 
-        # 获取
+        # 获取当前系统时间
+        dateTimePrefix = time.strftime("Split_%Y-%m-%d_%H-%M-%S", time.localtime())
 
         # 执行所有Excel的拆分
         for i in range(totalSplitNum):
             print('start split excelNo: ', i+1)
             # 通知进度
             self.signal_Progressed.emit(i+1, totalSplitNum)
-
-            # 获取当前系统时间
-            dateTimePrefix = time.strftime("Split_%Y-%m-%d_%H-%M-%S", time.localtime())
 
             # 执行对应键值的Excel拆分
             self.__executeOneExcelSplit__(dataValueKeyList[i], self.__dataList__, dateTimePrefix)
